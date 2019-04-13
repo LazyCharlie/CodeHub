@@ -31,7 +31,8 @@
                         <a href="register" target="_blank">注册</a>
                     </FormItem>
                     <FormItem>
-                        <Button style="width:320px" type="primary" @click="handleSubmit('formInline')">登录</Button>
+                        <Button style="width:320px" type="primary" @click="handleSubmit('formInline')">登录</Button><br>
+                        <span style="color:#9ea7b4;text-align:center">登陆即表示您同意网站的</span><a href="tos">《服务条款》</a>
                     </FormItem>
                 </Form>
             </div>
