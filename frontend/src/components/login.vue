@@ -41,7 +41,7 @@
 </style>
 <template>
     <div class="login">
-        <Button @click="handle_login" type="text">登录</Button>
+        <Button @click="handle_login" type="dashed" size="large">立即登录</Button>
         <Modal id="login"
                v-model="show_login"
                footer-hide

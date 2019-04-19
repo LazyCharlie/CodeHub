@@ -43,7 +43,7 @@
 </style>
 <template>
     <div class="register">
-        <Button @click="handle_register" type="primary">注册</Button>
+        <Button @click="handle_register" type="primary" size="large">快速注册</Button>
         <Modal id="register"
                v-model="show_register"
                onselectstart="return false"
