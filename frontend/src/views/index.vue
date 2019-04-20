@@ -9,11 +9,14 @@
     .layout-logo{
         width: 200px;
         height: 40px;
-        border-radius: 10px;
+        border-radius: 2px;
         float: left;
         position: relative;
         top: 12px;
         left: 300px;
+        margin-top: -12px;
+        font-size: 0px;
+        font-family: "Arial Rounded MT Bold";
     }
     .layout-nav{
         width: 200px;
@@ -25,19 +28,49 @@
     .layout-footer-center{
         text-align: center;
     }
-    img{
-        width: auto;
-        height: auto;
-        max-width: 100%;
-        max-height: 100%;
+    @font-face {
+        font-family: "Arial Rounded MT Bold";
+        src: url("../fontface/ArialRoundedBold.ttf") format("truetype");
+        font-weight: normal;
+        font-style: normal;
+    }
+    .logo-code{
+        color: #ff6103;
+        font-size:44px;
+    }
+    .logo-hub {
+        color: #009b62;
+        font-size: 44px;
+    }
+    .layout-menu{
+        margin-left: 540px;
     }
 </style>
 <template>
     <div class="layout">
         <Layout>
-                <Menu mode="horizontal" theme="light" active-name="1">
+                <Menu mode="horizontal" theme="light" active-name="1" onselectstart="return false">
                     <div class="layout-logo">
-                        <img src="../images/1.png">
+                        <span class="logo-code">code</span>
+                        <span class="logo-hub">hub</span>
+                    </div>
+                    <div class="layout-menu">
+                        <MenuItem name="1">
+                            <Icon type="ios-paper" />
+                            首页
+                        </MenuItem>
+                        <MenuItem name="2">
+                            <Icon type="ios-people" />
+                            问答
+                        </MenuItem>
+                        <MenuItem name="3">
+                            <Icon type="ios-people" />
+                            专栏
+                        </MenuItem>
+                        <MenuItem name="4">
+                            <Icon type="ios-people" />
+                            讲堂
+                        </MenuItem>
                     </div>
                     <div class="layout-nav">
                         <login style="display:inline"></login>
