@@ -79,7 +79,7 @@
                         <a href="register" target="_blank">注册</a>
                     </FormItem>
                     <FormItem>
-                        <Button style="width:320px" type="primary" @click="handleSubmit('formInline')">登录</Button><br>
+                        <Button style="width:320px" :loading="loading" type="primary" @click="handleSubmit()">登录</Button><br>
                         <span class="login-footer">登陆即表示您同意网站的</span><a href="tos">《服务条款》</a>
                     </FormItem>
                 </Form>
@@ -92,6 +92,7 @@
         data () {
             return {
                 test: true,
+                loading: false,
                 show_login: false,
                 formInline: {
                     user: '',
@@ -118,14 +119,23 @@
                 this.reset_input();
                 this.show_login = true;
             },
-            handleSubmit(name) {
-                this.$refs[name].validate((valid) => {
-                    if (valid) {
-                        this.$Message.success('Success!');
+            handleSubmit() {
+                let _this = this
+                _this.loading = true;
+                this.$http.request({
+                    url: _this.$url + 'users/login/' + this.formInline.user + '/' + this.formInline.password + '/',
+                    method: 'get',
+                }).then(function (response) {
+                    if (response.data == 'Success') {
+                        _this.$Message.success('登录成功！');
+                        _this.show_login = false;
                     } else {
-                        this.$Message.error('Fail!');
+                        _this.$Message.error('用户名或密码错误！');
                     }
+                }).catch(function(response) {
+                    console.log(response)
                 })
+                _this.loading = false;
             }
         }
     }

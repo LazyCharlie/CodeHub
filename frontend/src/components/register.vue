@@ -89,7 +89,7 @@
                         <a @click="switch_to_login">登录</a>
                     </FormItem>
                     <FormItem>
-                        <Button style="width:320px" type="primary" @click="handleSubmit('formInline')">注册</Button><br>
+                        <Button style="width:320px" type="primary" @click="handleSubmit()">注册</Button><br>
                         <span class="login-footer">登陆即表示您同意网站的</span><a href="tos">《服务条款》</a>
                     </FormItem>
                 </Form>
@@ -137,6 +137,22 @@
                 render:(h)=>{
                     return h('login');
                 }
+            },
+            handleSubmit() {
+                let _this = this
+                this.$http.request({
+                    url: _this.$url + 'users/register/' + this.formInline.user + '/' + this.formInline.password + '/',
+                    method: 'get',
+                }).then(function (response) {
+                    if (response.data == 'Success') {
+                        _this.$Message.success('注册成功!');
+                        _this.show_register = false;
+                    } else {
+                        _this.$Message.error('该用户名已存在！');
+                    }
+                }).catch(function(response) {
+                    console.log(response)
+                })
             }
         }
     }
