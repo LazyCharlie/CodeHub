@@ -67,7 +67,7 @@
                         <Input type="password"
                                class="login-password-input"
                                v-model="formInline.password"
-                               placeholder="Password"
+                        placeholder="Password"
                                size="large">
                             <Icon type="ios-lock-outline" slot="prepend"></Icon>
                         </Input>
@@ -100,10 +100,10 @@
                 },
                 ruleInline: {
                     user: [
-                        { trigger: 'blur' }
+                        { trigger: 'change', required: true }
                     ],
                     password: [
-                        { trigger: 'blur' },
+                        { trigger: 'change', required: true },
                     ]
                 }
             }
@@ -121,7 +121,13 @@
             },
             handleSubmit() {
                 let _this = this
+                if (_this.formInline.user == '') {
+
+                }
                 _this.loading = true;
+                setTimeout(() => {
+                    _this.loading = false;
+                }, 2000);
                 this.$http.request({
                     url: _this.$url + 'users/login/' + this.formInline.user + '/' + this.formInline.password + '/',
                     method: 'get',
