@@ -1,12 +1,9 @@
 <style scoped>
 .login-input{
-    text-align:center;
-    margin-left:auto;
-    margin-right:auto;
+    margin-left:84px;
     margin-top:20px;
 }
 .user-title{
-    margin-left:-227px;
     font-weight:bold;
     font-size:14px;
 }
@@ -15,18 +12,13 @@
     font-size: 17px;
 }
 .login-name-input {
-    margin-left:auto;
-    margin-right:auto;
     width:320px;
     margin-top:5px;
 }
 .login-password-input{
-    margin-left:auto;
-    margin-right:auto;
     width:320px;
 }
 .login-password-label{
-    margin-left:-292px;
     margin-top:-7px;
     font-weight:bold;
     font-size:14px;
@@ -36,6 +28,7 @@
 }
 .login-footer{
     color:#9ea7b4;
+    margin-left: 61px;
     text-align:center;
 }
 </style>
