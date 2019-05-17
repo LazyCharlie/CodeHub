@@ -124,19 +124,16 @@
             }
         },
         methods: {
-            clear_input() {
-                this.user = '',
-                this.password = '',
-                this.email = ''
-            },
-            handle_register() {
-                this.clear_input();
+            ShowRegister()
+            {
                 this.show_register = true;
             },
+            handle_register() {
+                this.$emit('bar_com',2);
+            },
             switch_to_login() {
-                render:(h)=>{
-                    return h('login');
-                }
+                this.show_register = false;
+                this.$emit('bar_com', 1);
             },
             handleSubmit() {
                 let _this = this

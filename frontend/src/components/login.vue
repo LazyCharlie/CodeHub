@@ -24,7 +24,7 @@
     font-size:14px;
 }
 .login-forget-label{
-    margin-top:-25px;
+    margin-top:-12px;
 }
 .login-footer{
     color:#9ea7b4;
@@ -36,6 +36,7 @@
     <div class="login">
         <Button @click="handle_login" type="dashed" size="large">立即登录</Button>
         <Modal id="login"
+               v-if="fresh"
                v-model="show_login"
                footer-hide
                onselectstart="return false">
@@ -69,7 +70,7 @@
                         <a href="forget" target="_blank">忘记密码?</a>
                         &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;&nbsp;
                         尚未拥有账户？
-                        <a href="register" target="_blank">注册</a>
+                        <a @click="switch_to_register">注册</a>
                     </FormItem>
                     <FormItem>
                         <Button style="width:320px" :loading="loading" type="primary" @click="handleSubmit()">登录</Button><br>
@@ -87,6 +88,7 @@
                 test: true,
                 loading: false,
                 show_login: false,
+                fresh: true,
                 formInline: {
                     user: '',
                     password: ''
@@ -102,25 +104,22 @@
             }
         },
         methods: {
-            reset_input()
+            switch_to_register()
             {
-                this.formInline.user = '';
-                this.formInline.password = '';
+                this.show_login = false
+                this.$emit('bar_com', 2);
+            },
+            ShowLogin()
+            {
+                this.show_login = true;
             },
             handle_login()
             {
-                this.reset_input();
-                this.show_login = true;
+                this.$emit('bar_com', 1);
             },
             handleSubmit() {
                 let _this = this
-                if (_this.formInline.user == '') {
-
-                }
                 _this.loading = true;
-                setTimeout(() => {
-                    _this.loading = false;
-                }, 2000);
                 this.$http.request({
                     url: _this.$url + 'users/login/' + this.formInline.user + '/' + this.formInline.password + '/',
                     method: 'get',
