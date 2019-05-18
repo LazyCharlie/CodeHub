@@ -12,9 +12,6 @@
         border-radius: 2px;
         float: left;
         position: relative;
-        top: 12px;
-        left: 300px;
-        margin-top: -12px;
         font-size: 0px;
         font-family: "Arial Rounded MT Bold";
     }
@@ -25,12 +22,19 @@
         margin:0 auto;
         margin-right: 260px;
     }
+    .bar{
+        width:820px;
+        position: relative;
+        text-align: center;
+        margin:0 auto;
+
+    }
     .layout-footer-center{
         text-align: center;
     }
     @font-face {
         font-family: "Arial Rounded MT Bold";
-        src: url("../fontface/ArialRoundedBold.ttf") format("truetype");
+        src: url("../../fontface/ArialRoundedBold.ttf") format("truetype");
         font-weight: normal;
         font-style: normal;
     }
@@ -43,40 +47,41 @@
         font-size: 30px;
     }
     .layout-menu{
-        margin-left: 540px;
     }
 </style>
 <template>
     <div class="layout">
-        <Layout>
             <Menu mode="horizontal" theme="light" active-name="1" onselectstart="return false">
-                <div class="layout-logo">
-                    <span class="logo-code">code</span>
-                    <span class="logo-hub">hub</span>
-                </div>
-                <div class="layout-menu">
-                    <MenuItem name="1">
-                        <Icon type="ios-paper" />
-                        首页
-                    </MenuItem>
-                    <MenuItem name="2">
-                        <Icon type="ios-people" />
-                        问答
-                    </MenuItem>
-                    <MenuItem name="3">
-                        <Icon type="ios-people" />
-                        专栏
-                    </MenuItem>
-                    <MenuItem name="4">
-                        <Icon type="ios-people" />
-                        讲堂
-                    </MenuItem>
-                </div>
-                <div class="layout-nav">
-                    <login v-if="fresh" @bar_com="bar_com" style="display:inline" ref="login_ref"></login>
-                    &nbsp;
-                    <register v-if="fresh" @bar_com="bar_com" style="display:inline" ref="register_ref"></register>
-                </div>
+                <i-col span="24">
+                    <div class="bar">
+                        <div class="layout-logo">
+                            <span class="logo-code">code</span>
+                            <span class="logo-hub">hub</span>
+                        </div>
+                        <div class="layout-menu">
+                            <MenuItem name="1">
+                                <Icon type="ios-paper" />
+                                首页
+                            </MenuItem>
+                            <MenuItem name="2">
+                                <Icon type="ios-people" />
+                                问答
+                            </MenuItem>
+                            <MenuItem name="3">
+                                <Icon type="ios-people" />
+                                专栏
+                            </MenuItem>
+                            <MenuItem name="4">
+                                <Icon type="ios-people" />
+                                讲堂
+                            </MenuItem>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <login v-if="fresh" @bar_com="bar_com" style="display:inline" ref="login_ref"></login>
+                        &nbsp;
+                        <register v-if="fresh" @bar_com="bar_com" style="display:inline" ref="register_ref"></register>
+                    </div>
+                </i-col>
             </Menu>
             <Content :style="{padding: '0 50px'}">
                 <Breadcrumb :style="{margin: '20px 0'}">
@@ -96,8 +101,8 @@
 </template>
 
 <script>
-    import login from '../components/login.vue'
-    import register from '../components/register.vue'
+    import login from './login.vue'
+    import register from './register.vue'
     export default {
         components: { login, register },
         data(){
