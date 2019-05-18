@@ -51,7 +51,8 @@
 </style>
 <template>
     <div class="layout">
-            <Menu mode="horizontal" theme="light" active-name="1" onselectstart="return false">
+        <Layout>
+            <Menu mode="horizontal" theme="light" active-name="1" onselectstart="return false" @on-select="test">
                 <i-col span="24">
                     <div class="bar">
                         <div class="layout-logo">
@@ -63,7 +64,7 @@
                                 <Icon type="ios-paper" />
                                 首页
                             </MenuItem>
-                            <MenuItem name="2">
+                            <MenuItem name="2" href="127.0.0.1:8080/questions">
                                 <Icon type="ios-people" />
                                 问答
                             </MenuItem>
@@ -83,19 +84,6 @@
                     </div>
                 </i-col>
             </Menu>
-            <Content :style="{padding: '0 50px'}">
-                <Breadcrumb :style="{margin: '20px 0'}">
-                    <BreadcrumbItem>Home</BreadcrumbItem>
-                    <BreadcrumbItem>Components</BreadcrumbItem>
-                    <BreadcrumbItem>Layout</BreadcrumbItem>
-                </Breadcrumb>
-                <Card>
-                    <div style="min-height: 200px;">
-                        Content
-                    </div>
-                </Card>
-            </Content>
-            <Footer class="layout-footer-center">2019-2019 &copy; Charlie</Footer>
         </Layout>
     </div>
 </template>
@@ -107,10 +95,17 @@
         components: { login, register },
         data(){
             return {
-                fresh: true
+                fresh: true,
+                cnt: 1,
             }
         },
         methods: {
+            test(name) {
+                this.cnt++;
+                console.log(this.cnt);
+                if (parseInt(name) == 2) this.$router.push({path: '/questions/1234'})
+                else if (parseInt(name) == 1) this.$router.push({path:'/'})
+            },
             bar_com(k) {
                 this.fresh = false;
                 let _this = this;
