@@ -8,9 +8,9 @@ const routers = [
         component: (resolve) => require(['./views/index.vue'], resolve)
     },
     {
-        path: '/questions/:id',
+        path: '/questions/',
         meta: {
-            title: '',
+            title: 'question',
             keepAlive: true,
         },
         component: (resolve) => require(['./views/questions.vue'], resolve)

@@ -52,7 +52,7 @@
 <template>
     <div class="layout">
         <Layout>
-            <Menu mode="horizontal" theme="light" active-name="1" onselectstart="return false" @on-select="test">
+            <Menu mode="horizontal" theme="light" :active-name="act_name" ref="menu" onselectstart="return false" @on-select="handle_select">
                 <i-col span="24">
                     <div class="bar">
                         <div class="layout-logo">
@@ -64,7 +64,7 @@
                                 <Icon type="ios-paper" />
                                 首页
                             </MenuItem>
-                            <MenuItem name="2" href="127.0.0.1:8080/questions">
+                            <MenuItem name="2">
                                 <Icon type="ios-people" />
                                 问答
                             </MenuItem>
@@ -96,22 +96,25 @@
         data(){
             return {
                 fresh: true,
-                cnt: 1,
+                act_name: "1"
             }
         },
         methods: {
-            test(name) {
-                this.cnt++;
-                console.log(this.cnt);
-                if (parseInt(name) == 2) this.$router.push({path: '/questions/1234'})
-                else if (parseInt(name) == 1) this.$router.push({path:'/'})
+            change_active_key(str) {
+                this.act_name = str;
+                this.$nextTick(function (){
+                    this.Menu.updateActiveName();
+                })
+            },
+            handle_select(name) {
+                if (name == "2") this.$router.push({path: '/questions'})
+                else if (name == "1") this.$router.push({path:'/'})
             },
             bar_com(k) {
                 this.fresh = false;
                 let _this = this;
                 this.$nextTick(() => {
                     _this.fresh = true;
-                    console.log(k);
                     this.$nextTick(() => {
                         if (k == 1) {
                             _this.$refs.login_ref.ShowLogin();
