@@ -1,10 +1,12 @@
 <style scoped>
     .layout{
         border-top: 2px solid #439766;
-        background: #f5f7f9;
+        background: #ffffff;
         position: relative;
         border-radius: 4px;
+        border-bottom: 1px solid #d8d8d8;
         overflow: hidden;
+        box-shadow:0 0 10px #d8d8d8;
     }
     .layout-logo{
         width: 200px;
@@ -47,12 +49,16 @@
         font-size: 30px;
     }
     .layout-menu{
+
+    }
+    .menu-style{
+        background: #fafafa;
     }
 </style>
 <template>
     <div class="layout">
         <Layout>
-            <Menu mode="horizontal" theme="light" :active-name="act_name" ref="menu" onselectstart="return false" @on-select="handle_select">
+            <Menu mode="horizontal" theme="light" :active-name="act_name" ref="menu" onselectstart="return false" @on-select="handle_select" class="menu-style">
                 <i-col span="24">
                     <div class="bar">
                         <div class="layout-logo">

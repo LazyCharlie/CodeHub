@@ -1,13 +1,24 @@
 <style scoped>
     .register-header {
+        background: #f3f3f3;
+        height: 56px;
+        width: 520px;
+        margin-left: -16px;
+        margin-top: -16px;
+        border-bottom: 1px solid #e5e5e5;
+        border-radius: 6px 6px 0 0;
+    }
+    .register-header-text {
         text-align: left;
-        font-size: 17px;
+        font-size: 21px;
+        font-weight: 700;
+        padding: 12px 16px;
     }
     .register-form {
         text-align:center;
         margin-left:auto;
         margin-right:auto;
-        margin-top:20px;
+        margin-top:40px;
     }
     .register-user-title{
         margin-left:-274px;
@@ -48,10 +59,9 @@
                v-model="show_register"
                onselectstart="return false"
                footer-hide>
-            <p slot="header"
-                class="register-header">
-                <span>注册</span>
-            </p>
+            <div class="register-header">
+                <p class="register-header-text">注册</p>
+            </div>
             <div class="register-form">
                 <Form ref="formInline" :model="formInline" :rules="ruleInline">
                     <p class="register-user-title">用户名</p>

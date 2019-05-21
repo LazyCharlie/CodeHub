@@ -1,15 +1,26 @@
 <style scoped>
 .login-input{
     margin-left:84px;
-    margin-top:20px;
+    margin-top:40px;
 }
 .user-title{
     font-weight:bold;
     font-size:14px;
 }
 .login-header {
+    background: #f3f3f3;
+    height: 56px;
+    width: 520px;
+    margin-left: -16px;
+    margin-top: -16px;
+    border-bottom: 1px solid #e5e5e5;
+    border-radius: 6px 6px 0 0;
+}
+.login-header-text {
     text-align: left;
-    font-size: 17px;
+    font-size: 21px;
+    font-weight: 700;
+    padding: 12px 16px;
 }
 .login-name-input {
     width:320px;
@@ -24,7 +35,7 @@
     font-size:14px;
 }
 .login-forget-label{
-    margin-top:-12px;
+    margin-top:-27px;
 }
 .login-footer{
     color:#9ea7b4;
@@ -39,11 +50,12 @@
                v-if="fresh"
                v-model="show_login"
                footer-hide
+               class="test-style"
                onselectstart="return false">
-            <p slot="header"
+            <div
                class="login-header">
-                <span>登录</span>
-            </p>
+                <p class="login-header-text">登录</p>
+            </div>
             <div class="login-input">
                 <Form ref="formInline" :model="formInline" :rules="ruleInline">
                     <p class="user-title">用户名 或 邮箱</p>
@@ -72,8 +84,8 @@
                         尚未拥有账户？
                         <a @click="switch_to_register">注册</a>
                     </FormItem>
-                    <FormItem>
-                        <Button style="width:320px" :loading="loading" type="primary" @click="handleSubmit()">登录</Button><br>
+                    <FormItem style="margin-top:-5px">
+                        <Button style="width:320px;margin-top:1px" :loading="loading" type="primary" @click="handleSubmit()">登录</Button><br>
                         <span class="login-footer">登陆即表示您同意网站的</span><a href="tos">《服务条款》</a>
                     </FormItem>
                 </Form>
@@ -95,10 +107,10 @@
                 },
                 ruleInline: {
                     user: [
-                        { trigger: 'change', required: true }
+                        { trigger: 'change', required: true, message: ' ' }
                     ],
                     password: [
-                        { trigger: 'change', required: true },
+                        { trigger: 'change', required: true, message: ' ' },
                     ]
                 }
             }
