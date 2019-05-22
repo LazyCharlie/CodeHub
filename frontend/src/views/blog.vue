@@ -45,7 +45,6 @@
     font-size: 15px;
     position: relative;
     height: 36px;
-    margin-left: 120px;
     margin-top: -8px;
 }
 .commit-style:hover{
@@ -66,15 +65,7 @@
     position: relative;
     margin-left: 40px;
     margin-top: -26px;
-}
-.vote-style{
-    width: 105px;
-    height: 34px;
-    margin-top:10px;
-    background: #e8f3ff;
-    color: #0084ff;
-    padding: 7px;
-    border-radius: 4px;
+    color: #000000;
 }
 .blog-body-style {
     margin:auto;
@@ -92,7 +83,7 @@
     text-align: left;
     color: #000000;
 }
-.divider-style{
+.divider-style {
     width: 660px;
     position: relative;
     margin: auto;
@@ -104,6 +95,31 @@
     color: #000;
     margin-top: 16px;
 }
+.vote-style{
+    width: 105px;
+    height: 34px;
+    margin-top:10px;
+    background: #e8f3ff;
+    padding: 7px;
+    border-radius: 4px;
+    z-index: 500;
+    user-select:none;
+}
+.vote-style:hover{
+    background: #dfedff;
+    cursor:pointer;
+    z-index: 500;
+}
+.vote-style:visited{
+    background: #0083ff;
+    z-index:500;
+}
+.reply-style{
+    font-size:14px;
+    font-weight: 400;
+    color: #000;
+    margin-top: 10px;
+}
 .vote-font-style{
     font-size: 14px;
 }
@@ -114,10 +130,82 @@
 }
 .body-commit-block{
     margin-top: -28px;
+    position: relative;
+    margin-left: 120px;
+    user-select:none;
+}
+.vote-link-style{
+    z-index: 400;
+    margin-left: 5px;
+}
+.reply-user-name-style{
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    position: relative;
+    margin-top: -22px;
+    margin-left: 5px;
+}
+.reply-body-font-style{
+    font-size:14px;
+    font-weight: 400;
+    color: #000;
+    margin-top: 6px;
+    margin-left: 28px;
+}
+.reply-body-time-style{
+    color: #8590a6;
+    font-size:14px;
+    font-weight: 600;
+    text-align: right;
+}
+.reply-head-style{
+    padding-top:15px;
+}
+.commit-card-style
+{
+    margin-top: 20px;
+}
+.reply-vote-style{
+    color: #858fa6;
+    width:100%;
+}
+.reply-vote-style:hover{
+    color: #175199;
+    cursor: pointer;
+}
+.reply-menu-style{
+    height: 30px;
+    margin-left: 30px;
+    margin-top:12px;
+    user-select:none;
+}
+.reply-reply-style{
+    margin-left: 18px;
+    margin-top: -21px;
+}
+.reply-menu-style .reply-reply-style{
+    color: #ffffff;
+}
+.reply-menu-style:hover .reply-reply-style{
+    color: #858fa6;
+}
+.reply-menu-style:hover .reply-reply-style:hover{
+    color: #175199;
+}
+.reply-after-click{
+    color: #858fa6;
+    margin-left: 18px;
+    margin-top: -21px;
+}
+.reply-in-reply{
+    width: 595px;
+    margin-left: 28px;
+}
+.reply-after-click:hover{
+    color: #175199;
 }
 .input-commit-style{
-    position: relative;
-    margin-top: 23px;
 }
 </style>
 
@@ -147,16 +235,17 @@
                    type="textarea"
                    class="input-commit-style"
                    :autosize="{minRows: 5,maxRows: 1000}"
+                   style="margin-top:25px;"
                    placeholder="写回答..." >
             </Input>
             <Button type="primary" class="submit-button">提交</Button>
         </div>
         <div style="height:9px" v-if="load_edit"></div>
         <div class="blog-body-block">
-            <p class="answer-count-style">{{ data.total_commit }} 个回答</p>
+            <p class="answer-count-style">{{ data.records }} 个回答</p>
             <Divider class="divider-style"/>
         </div>
-        <div class="blog-body-block" v-for="answer in data.answers">
+        <div class="blog-body-block" v-for="(answer, index) in data.answers">
             <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" style="margin-top:-5px;"/>
             <p class="user-name-style">
                 {{ answer.author }}
@@ -167,17 +256,93 @@
             <p class="foot-font-style">
                 发布于 {{ answer.time }}
             </p>
-            <div class="vote-style">
-                <a class="vote-style">
-                    <Icon type="md-thumbs-up" size="16" style="margin-top:-5px" />
-                    <span class="vote-font-style">赞同 {{ answer.vote }}</span>
-                </a>
-            </div>
-            <div class="body-commit-block">
-                <a class="body-commit-style" @click="show_main_commit()">
-                    <Icon type="ios-chatbubbles" size="20" />
-                    {{ answer.records }} 条评论
-                </a>
+
+            <div style="display: inline">
+                <div class="vote-style" @click="answer.voted=!answer.voted; answer.vote+=answer.voted*2-1;" :style="{ background: answer.voted? '#0084ff': '', color:answer.voted? '#ffffff': ''}">
+                    <a class="vote-link-style" :style="{ color:answer.voted? '#ffffff': '#0084ff'}">
+                        <Icon type="md-thumbs-up" size="16" style="margin-top:-5px" />
+                        <span class="vote-font-style" v-show="!answer.voted" >赞同 {{ answer.vote }}</span>
+                        <span class="vote-font-style" v-show="answer.voted">已赞同 {{ answer.vote }}</span>
+                    </a>
+                </div>
+                <div class="body-commit-block">
+                    <a class="body-commit-style" @click="handle_commit(index)">
+                        <Icon type="ios-chatbubbles" size="20" />
+                        <span v-if="!answer.show_commit">{{ answer.records }} 条评论</span>
+                        <span v-if="answer.show_commit">收起评论</span>
+                    </a>
+                </div>
+                <card v-if="answer.show_commit" class="commit-card-style">
+                    <span class="answer-count-style">{{ answer.records }} 条评论</span>
+                    <div style="height:12px;"></div>
+                    <div style="height:9px;background:#f6f6f6; width: 652px; margin-left: -16px;"></div>
+                    <div v-for="reply in answer.reply" >
+                        <Row class="reply-head-style">
+                            <i-col span="12">
+                                <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg"size="small"/>
+                                <p class="reply-user-name-style" style="display:inline-block">{{ reply.author }}</p>
+                            </i-col>
+                            <i-col span="12" style="text-align:right">
+                                <p class="reply-body-time-style" style="display:inline-block">{{ reply.time }}</p>
+                            </i-col>
+                        </Row>
+                        <p class="reply-body-font-style">{{ reply.body }}</p>
+                        <Row class="reply-menu-style">
+                            <span class="reply-vote-style" @click="reply.voted=!reply.voted; reply.vote+=reply.voted*2-1;" :style="{ color: reply.voted? '#0084ff': ''}">
+                                <Icon type="md-thumbs-up" size="18"  style="margin-top:-5px;"/>
+                                {{ reply.vote }}
+                            </span>
+                            <span class="reply-reply-style" @click="reply.is_reply=true" v-if="!reply.is_reply">
+                                <Icon type="ios-undo" size="18"/>
+                                回复
+                            </span>
+                            <span class="reply-after-click" @click="reply.is_reply=false" v-if="reply.is_reply">
+                                <Icon type="ios-undo" size="18"/>
+                                取消回复
+                            </span>
+                        </Row>
+                        <Row>
+                            <Input :placeholder="'回复' + reply.author" v-if="reply.is_reply" style="margin-left:28px;width: 520px;"></Input>
+                            <Button type="primary" v-if="reply.is_reply" style="margin-left: 10px;">发布</Button>
+                        </Row>
+
+
+                        <div v-for="commit in reply.reply" class="reply-in-reply">
+                            <Row class="reply-head-style">
+                                <i-col span="12">
+                                    <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg"size="small"/>
+                                    <p class="reply-user-name-style" style="display:inline-block">{{ commit.author }} </p>
+                                    <p style="display: inline-block; color: #8590a6;"> 回复 </p>
+                                    <p class="reply-user-name-style" style="display: inline-block;">{{ commit.reply_to }}</p>
+                                </i-col>
+                                <i-col span="12" style="text-align:right">
+                                    <p class="reply-body-time-style" style="display:inline-block">{{ commit.time }}</p>
+                                </i-col>
+                            </Row>
+                            <p class="reply-body-font-style">{{ commit.body }}</p>
+                            <Row class="reply-menu-style">
+                            <span class="reply-vote-style" @click="commit.voted=!commit.voted; commit.vote+=commit.voted*2-1;" :style="{ color: commit.voted? '#0084ff': ''}">
+                                <Icon type="md-thumbs-up" size="18"  style="margin-top:-5px;"/>
+                                {{ commit.vote }}
+                            </span>
+                                <span class="reply-reply-style" @click="commit.is_reply=true" v-if="!commit.is_reply">
+                                <Icon type="ios-undo" size="18"/>
+                                回复
+                            </span>
+                            <span class="reply-after-click" @click="commit.is_reply=false" v-if="commit.is_reply">
+                                <Icon type="ios-undo" size="18"/>
+                                取消回复
+                            </span>
+                            </Row>
+                            <Row>
+                                <Input :placeholder="'回复' + commit.author" v-if="commit.is_reply" style="margin-left:28px; width:491px;"></Input>
+                                <Button type="primary" v-if="commit.is_reply" style="margin-left: 10px;">发布</Button>
+                            </Row>
+                        </div>
+
+
+                    </div>
+                </card>
             </div>
             <Divider class="divider-style"/>
         </div>
@@ -190,9 +355,9 @@
         data() {
             return {
                 load_edit: false,
-                text_content:'',
+                text_content:'',     //记录评论模块中写入的文本
                 data: {
-                    "total_commit": 1324,
+                    "records": 1324,
                     "title": {
                         "head": "你有哪些秘密一直深埋心底?",
                         "body": "你要对未来满怀期待，对生活心存善意，但是你也要时刻做好最坏的准备。吃得苦中苦，方为人上人，我不想什么人上人，可这时间疾苦，照样谁都没放过。活下去，笑出来。",
@@ -223,22 +388,44 @@
                             "author": "Charlie",
                             "time": "2018-10-27",
                             "vote": 13,
+                            "voted": false,
+                            "show_commit": false,
                             "reply": [
                                 {
                                     "author": "立柯然",
-                                    "is_reply": false,
-                                    "reply_to": "",
                                     "body": "编故事者无论多烂都有人信",
                                     "time": "6个月前",
-                                    "vote": 28,
+                                    "vote": 238,
+                                    "voted": false,
+                                    "is_reply": false,
+                                    "reply": [
+                                        {
+                                            "author": "Codeforces",
+                                            "reply_to": "AtCoders",
+                                            "time": "3天前",
+                                            "body": "A true master, is an eternal student",
+                                            "vote": 128,
+                                            "voted": false,
+                                            "is_reply": false,
+                                        },
+                                        {
+                                            "author": "AtCoder",
+                                            "reply_to": "Codeforces",
+                                            "time": "3天前",
+                                            "body": "Many feos, one Strike",
+                                            "vote": 212,
+                                            "voted": false,
+                                            "is_reply": false,
+                                        },
+                                    ]
                                 },
                                 {
                                     "author": "立柯然",
-                                    "is_reply": true,
-                                    "reply_to": "立柯然",
                                     "body": "或许是很多人没法分清现实与幻觉了吧？毕竟现实也是通过感觉来获知的",
                                     "time": "6个月前",
                                     "vote": 17,
+                                    "voted": false,
+                                    "is_reply": false,
                                 },
                             ]
                         },
@@ -248,6 +435,8 @@
                             "author": "Charlie",
                             "time": "2018-10-27",
                             "vote": 26,
+                            "voted": false,
+                            "show_commit": false,
                             "reply": [
                                 {
                                     "author": "立柯然",
@@ -256,6 +445,7 @@
                                     "body": "编故事者无论多烂都有人信",
                                     "time": "6个月前",
                                     "vote": 28,
+                                    "voted": false,
                                 },
                                 {
                                     "author": "立柯然",
@@ -264,6 +454,7 @@
                                     "body": "或许是很多人没法分清现实与幻觉了吧？毕竟现实也是通过感觉来获知的",
                                     "time": "6个月前",
                                     "vote": 17,
+                                    "voted": false,
                                 },
                             ]
                         }
@@ -277,7 +468,31 @@
             },
             show_main_commit() {   //显示主题评论
 
+            },
+            handle_commit(index) {
+                this.data.answers[index].show_commit ^= 1;
+            },
+            page_init()
+            {
+                let _this = this;
+                this.$http.request({
+                    method: 'get',
+                    url: _this.$url + 'questions/' + this.$route.params.id + '/',
+                }).then(response=> {
+                    var data = JSON.parse(JSON.stringify(response.data, null, 4));
+                    if (data.state==404) {
+                        this.$router.push({path: '/questions'})
+                    }
+                    this.data.title = data.title;
+                    this.data.answers = data.answers;
+                    this.data.records = data.records;
+                }).catch(function(response) {
+                    console.log(response)
+                })
             }
+        },
+        mounted() {
+            this.page_init();
         },
         beforeRouteEnter(to, from, next) {
             window.document.body.style.backgroundColor = '#f6f6f6';

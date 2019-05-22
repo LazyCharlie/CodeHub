@@ -110,7 +110,18 @@
         <Row class="div-center-style">
             <i-col span="24" class="demo-tabs-style1" style="padding:16px;">
                 <Tabs type="card" class="pane-center-style" :animated="false">
-                    <i-button class="create-question-style" type="success" slot="extra">+ 提问题</i-button>
+                    <i-button class="create-question-style" type="success" slot="extra" @click="handle_ask()">+ 提问题</i-button>
+                    <Modal v-model="show_ask">
+                        <Input type="text" placeholder="写问题..." v-model="text_title"></Input>
+                        <Button type="primary" @click="handle_submit">提交</Button>
+                        <Input v-model="text_content"
+                               type="textarea"
+                               class="input-commit-style"
+                               :autosize="{minRows: 5,maxRows: 1000}"
+                               style="margin-top:25px;"
+                               placeholder="写回答..." >
+                        </Input>
+                    </Modal>
                     <Tab-pane label="最新问答 ">
                         <div v-for="question in questions" class="question-card-block">
                             <Card :bordered="false" class="question-card-style">
@@ -177,12 +188,33 @@
                 total_record: 0,
                 questions: '',
                 unit: 5,
+                show_ask: false,
+                text_content: '',
+                text_title: '',
             }
         },
         methods: {
+            handle_submit() {
+                var sendData = {'body': this.text_content, 'head': this.text_title,  'author': 'Charlie'};
+                var sendJson = JSON.stringify(sendData);
+                let _this = this;
+                this.$http.request({
+                    method: 'post',
+                    url: _this.$url + 'questions/' + 'create/',
+                    data: sendJson,
+                }).then(response=> {
+                    var data = JSON.parse(JSON.stringify(response.data, null, 4));
+                    this.$router.push({path: '/questions/' + data.id })
+                }).catch(function(response) {
+                    console.log(response)
+                })
+            },
             pIndexChange(i) {
                 this.current_page = i;
                 this.request_data(this.unit, 1, i);
+            },
+            handle_ask() {
+                this.show_ask = true;
             },
             request_data(unit, mode, page)
             {

@@ -16,7 +16,7 @@ const routers = [
         component: (resolve) => require(['./views/questions.vue'], resolve)
     },
     {
-        path: '/questions/1234',
+        path: '/questions/:id',
         meta: {
             title: 'question',
             keepAlive: true,
