@@ -94,6 +94,9 @@
         color:#333333;
         width: 600px;
     }
+    .super-admin{
+        margin-top: -50px;
+    }
     .href-style:hover{
         color: #027f66;
         text-decoration:underline;
@@ -109,7 +112,7 @@
     <div>
         <Row class="div-center-style">
             <i-col span="24" class="demo-tabs-style1" style="padding:16px;">
-                <Tabs type="card" class="pane-center-style" :animated="false">
+                <Tabs type="card" class="pane-center-style" :animated="false" v-model="active_pane">
                     <i-button class="create-question-style" type="success" slot="extra" @click="handle_ask()">+ 提问题</i-button>
                     <Modal v-model="show_ask">
                         <Input type="text" placeholder="写问题..." v-model="text_title"></Input>
@@ -122,7 +125,7 @@
                                placeholder="写回答..." >
                         </Input>
                     </Modal>
-                    <Tab-pane label="最新问答 ">
+                    <Tab-pane label="最新问答 " name="1">
                         <div v-for="question in questions" class="question-card-block">
                             <Card :bordered="false" class="question-card-style">
                                 <div class="demo-card-votes">
@@ -142,26 +145,78 @@
                                     <p style="margin-top:-4px">浏览</p>
                                 </div>
                                 <div class="demo-card-name">
-                                    <p>{{ question.author }}</p>
+                                    <span>{{ question.author }}</span>
+                                    <a v-if="$parent.is_admin === true">删除</a>
                                 </div>
                                 <div class="demo-card-title">
-                                    <a href="question.url" class="href-style">{{ question.title }}</a>
+                                    <a @click="nextPage(question.id)" class="href-style">{{ question.title }}</a>
                                 </div>
                             </Card>
                             <Divider  style="margin-top:1px; width:817px; left: -13px;"/>
                         </div>
                     </Tab-pane>
 
-                    <Tab-pane label="等待回答 ">
+                    <Tab-pane label="等待回答 " name="2">
+                        <div v-for="question in questions" class="question-card-block">
+                            <Card :bordered="false" class="question-card-style">
+                                <div class="demo-card-votes">
+                                    <p>{{ question.vote }}</p>
+                                    <p>得票</p>
+                                </div>
+                                <div v-if="question.ans === 0" class="demo-card-ans-zero">
+                                    <p>{{ question.ans }}</p>
+                                    <p style="margin-top:-4px">回答</p>
+                                </div>
+                                <div v-if="question.ans >= 1" class="demo-card-ans-have">
+                                    <p>{{ question.ans }}</p>
+                                    <p style="margin-top:-4px">回答</p>
+                                </div>
+                                <div class="demo-card-scan">
+                                    <p>{{ question.scan }}</p>
+                                    <p style="margin-top:-4px">浏览</p>
+                                </div>
+                                <div class="demo-card-name">
+                                    <span>{{ question.author }}</span>
+                                    <a v-if="$parent.is_admin === true">删除</a>
+                                </div>
+                                <div class="demo-card-title">
+                                    <a @click="nextPage(question.id)" class="href-style">{{ question.title }}</a>
+                                </div>
+                            </Card>
+                            <Divider  style="margin-top:1px; width:817px; left: -13px;"/>
+                        </div>
                     </Tab-pane>
 
-
-
-                    <Tab-pane label="热门问答 ">
+                    <Tab-pane label="热门问答 " name="3">
+                        <div v-for="question in questions" class="question-card-block">
+                            <Card :bordered="false" class="question-card-style">
+                                <div class="demo-card-votes">
+                                    <p>{{ question.vote }}</p>
+                                    <p>得票</p>
+                                </div>
+                                <div v-if="question.ans === 0" class="demo-card-ans-zero">
+                                    <p>{{ question.ans }}</p>
+                                    <p style="margin-top:-4px">回答</p>
+                                </div>
+                                <div v-if="question.ans >= 1" class="demo-card-ans-have">
+                                    <p>{{ question.ans }}</p>
+                                    <p style="margin-top:-4px">回答</p>
+                                </div>
+                                <div class="demo-card-scan">
+                                    <p>{{ question.scan }}</p>
+                                    <p style="margin-top:-4px">浏览</p>
+                                </div>
+                                <div class="demo-card-name">
+                                    <span>{{ question.author }}</span>
+                                    <a v-if="$parent.is_admin === true">删除</a>
+                                </div>
+                                <div class="demo-card-title">
+                                    <a @click="nextPage(question.id)" class="href-style">{{ question.title }}</a>
+                                </div>
+                            </Card>
+                            <Divider  style="margin-top:1px; width:817px; left: -13px;"/>
+                        </div>
                     </Tab-pane>
-
-
-
                 </Tabs>
             </i-col>
         </Row>
@@ -176,6 +231,7 @@
                 </div>
             </i-col>
         </Row>
+        <div style="height:20px"></div>
     </div>
 </template>
 <script>
@@ -187,13 +243,18 @@
                 current_page: 1,
                 total_record: 0,
                 questions: '',
-                unit: 5,
+                unit: 12,
                 show_ask: false,
                 text_content: '',
                 text_title: '',
+                active_pane: '1',
             }
         },
         methods: {
+            nextPage(id)
+            {
+                this.$router.push({path: '/questions/' + id })
+            },
             handle_submit() {
                 var sendData = {'body': this.text_content, 'head': this.text_title,  'author': 'Charlie'};
                 var sendJson = JSON.stringify(sendData);
@@ -241,6 +302,11 @@
         mounted() {
             this.request_data(this.unit, 1, 1);
         },
+        watch: {
+            active_pane() {
+                this.request_data(this.unit, eval(this.active_pane), 1);
+            }
+        }
     }
 </script>
 

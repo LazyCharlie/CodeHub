@@ -136,9 +136,12 @@
                     url: _this.$url + 'users/login/' + this.formInline.user + '/' + this.formInline.password + '/',
                     method: 'get',
                 }).then(function (response) {
-                    if (response.data == 'Success') {
-                        _this.$Message.success('登录成功！');
+                    var data = JSON.parse(JSON.stringify(response.data, null, 4));
+                    if (data.status == 'Success') {
+                        _this.$Message.success('登录成功!');
                         _this.show_login = false;
+                        _this.$emit('userSignIn', _this.formInline.user, 0);
+                        _this.$route.go(0);
                     } else {
                         _this.$Message.error('用户名或密码错误！');
                     }

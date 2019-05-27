@@ -84,9 +84,13 @@
                             </MenuItem>
                         </div>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <login v-if="fresh" @bar_com="bar_com" style="display:inline" ref="login_ref"></login>
+                        <login @userSignIn="userSignIn" v-if="fresh&&show_button" @bar_com="bar_com" style="display:inline" ref="login_ref"></login>
                         &nbsp;
-                        <register v-if="fresh" @bar_com="bar_com" style="display:inline" ref="register_ref"></register>
+                        <register v-if="fresh&&show_button" @bar_com="bar_com" style="display:inline" ref="register_ref"></register>
+                        <Avatar v-if="!show_button" shape="square" icon="ios-person" style="margin-left:-30px;background-color: #87d068" size="large"/>
+                        <span v-if="!show_button" style="margin-left: 12px">欢迎，</span>
+                        <span v-if="!show_button" style="font-weight: bold">{{ userName }}</span>
+                        <a v-if="!show_button" style="margin-left:20px" @click="exit_login">退出登录</a>
                     </div>
                 </i-col>
             </Menu>
@@ -102,7 +106,18 @@
         data(){
             return {
                 fresh: true,
-                act_name: "1"
+                act_name: "1",
+                userName: '',
+                show_button: true,
+                is_admin: false
+            }
+        },
+        mounted()
+        {
+            if (this.$parent.userName) {
+                this.userName = this.$parent.userName;
+                this.is_admin = this.$parent.is_admin;
+                this.show_button  = false;
             }
         },
         methods: {
@@ -112,9 +127,21 @@
                     this.Menu.updateActiveName();
                 })
             },
+            exit_login()
+            {
+                this.userName = '';
+                this.is_admin = '';
+                this.$emit('userSignIn', '', false);
+            },
             handle_select(name) {
                 if (name == "2") this.$router.push({path: '/questions'})
                 else if (name == "1") this.$router.push({path:'/'})
+            },
+            userSignIn(username, is_admin)
+            {
+                this.$emit('userSignIn', username, is_admin);
+                this.userName = username;
+                this.is_admin = is_admin;
             },
             bar_com(k) {
                 this.fresh = false;
@@ -129,6 +156,14 @@
                     })
                 })
             },
+        },
+        watch:{
+            userName() {
+                if (this.userName) {
+                    this.show_button  = false;
+                }
+                else this.show_button = true;
+            }
         }
     }
 </script>

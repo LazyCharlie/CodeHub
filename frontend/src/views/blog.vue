@@ -19,6 +19,7 @@
     font-size:14px;
     font-weight: 400;
     color: #000;
+    margin-top: 8px;
 }
 .list-menu-style{
     width: 660px;
@@ -86,8 +87,9 @@
 .divider-style {
     width: 660px;
     position: relative;
-    margin: auto;
-    top: 18px;
+    margin-top: -20px;
+    left: -3px;
+    float: left;
 }
 .body-font-style{
     font-size:14px;
@@ -164,7 +166,7 @@
 }
 .commit-card-style
 {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 .reply-vote-style{
     color: #858fa6;
@@ -175,14 +177,14 @@
     cursor: pointer;
 }
 .reply-menu-style{
-    height: 30px;
+    height: 20px;
     margin-left: 30px;
-    margin-top:12px;
+    margin-top:7px;
     user-select:none;
 }
 .reply-reply-style{
     margin-left: 18px;
-    margin-top: -21px;
+    margin-top: -24px;
 }
 .reply-menu-style .reply-reply-style{
     color: #ffffff;
@@ -201,9 +203,28 @@
 .reply-in-reply{
     width: 595px;
     margin-left: 28px;
+    padding: 0;
 }
 .reply-after-click:hover{
     color: #175199;
+}
+.noans-background-card{
+    background: url("../assets/back_noans.png");
+    width: 694px;
+    height: 240px;
+    margin: auto;
+    left: -150px;
+    text-align: center;
+    line-height: 340px;
+}
+.card-font-style{
+    color: #8790a4;
+}
+.card-link-style:hover{
+    color: #2d79de;
+}
+.card-link-style{
+    color: #265294;
 }
 .input-commit-style{
 }
@@ -231,21 +252,27 @@
         <div class="blog-body-block" v-if="load_edit">
             <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
             <p class="user-name-style">charlie</p>
-            <Input v-model="text_content"
+            <Input v-model="text_content_main"
                    type="textarea"
                    class="input-commit-style"
                    :autosize="{minRows: 5,maxRows: 1000}"
                    style="margin-top:25px;"
                    placeholder="写回答..." >
             </Input>
-            <Button type="primary" class="submit-button">提交</Button>
+            <Button type="primary" class="submit-button" @click="handle_submit(text_content_main, -1, -1)">提交</Button>
         </div>
         <div style="height:9px" v-if="load_edit"></div>
-        <div class="blog-body-block">
+        <div class="blog-body-block" v-if="data.records">
             <p class="answer-count-style">{{ data.records }} 个回答</p>
-            <Divider class="divider-style"/>
         </div>
+        <Card v-if="!data.records" class="noans-background-card" shadow>
+            <Row>
+                <span class="card-font-style">暂时还没有回答，开始</span>
+                <a class="card-link-style" @click="show_editor">写第一个回答</a>
+            </Row>
+        </Card>
         <div class="blog-body-block" v-for="(answer, index) in data.answers">
+            <Divider class="divider-style"/>
             <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" style="margin-top:-5px;"/>
             <p class="user-name-style">
                 {{ answer.author }}
@@ -268,14 +295,19 @@
                 <div class="body-commit-block">
                     <a class="body-commit-style" @click="handle_commit(index)">
                         <Icon type="ios-chatbubbles" size="20" />
-                        <span v-if="!answer.show_commit">{{ answer.records }} 条评论</span>
+                        <span v-if="!answer.show_commit&&!answer.records">添加评论</span>
+                        <span v-if="!answer.show_commit&&answer.records">{{ answer.records }} 条评论</span>
                         <span v-if="answer.show_commit">收起评论</span>
                     </a>
                 </div>
                 <card v-if="answer.show_commit" class="commit-card-style">
-                    <span class="answer-count-style">{{ answer.records }} 条评论</span>
+                    <span class="answer-count-style" v-if="answer.records">{{ answer.records }} 条评论</span>
+                    <span class="answer-count-style" v-if="!answer.records">还没有评论</span>
                     <div style="height:12px;"></div>
                     <div style="height:9px;background:#f6f6f6; width: 652px; margin-left: -16px;"></div>
+
+
+
                     <div v-for="reply in answer.reply" >
                         <Row class="reply-head-style">
                             <i-col span="12">
@@ -302,10 +334,9 @@
                             </span>
                         </Row>
                         <Row>
-                            <Input :placeholder="'回复' + reply.author" v-if="reply.is_reply" style="margin-left:28px;width: 520px;"></Input>
-                            <Button type="primary" v-if="reply.is_reply" style="margin-left: 10px;">发布</Button>
+                            <Input :placeholder="'回复' + reply.author" v-if="reply.is_reply" v-model='reply.reply_content' style="margin-left:28px;width: 520px; margin-top:10px"></Input>
+                            <Button type="primary" v-if="reply.is_reply" style="margin-left: 10px;" @click="handle_submit(reply.reply_content, answer.floor, reply.commit_id, reply.author)">发布</Button>
                         </Row>
-
 
                         <div v-for="commit in reply.reply" class="reply-in-reply">
                             <Row class="reply-head-style">
@@ -321,45 +352,52 @@
                             </Row>
                             <p class="reply-body-font-style">{{ commit.body }}</p>
                             <Row class="reply-menu-style">
-                            <span class="reply-vote-style" @click="commit.voted=!commit.voted; commit.vote+=commit.voted*2-1;" :style="{ color: commit.voted? '#0084ff': ''}">
-                                <Icon type="md-thumbs-up" size="18"  style="margin-top:-5px;"/>
-                                {{ commit.vote }}
-                            </span>
-                                <span class="reply-reply-style" @click="commit.is_reply=true" v-if="!commit.is_reply">
-                                <Icon type="ios-undo" size="18"/>
-                                回复
-                            </span>
-                            <span class="reply-after-click" @click="commit.is_reply=false" v-if="commit.is_reply">
-                                <Icon type="ios-undo" size="18"/>
-                                取消回复
-                            </span>
+                                <span class="reply-vote-style" @click="commit.voted=!commit.voted; commit.vote+=commit.voted*2-1;" :style="{ color: commit.voted? '#0084ff': ''}">
+                                    <Icon type="md-thumbs-up" size="18"  style="margin-top:-5px;"/>
+                                    {{ commit.vote }}
+                                </span>
+                                    <span class="reply-reply-style" @click="commit.is_reply=true" v-if="!commit.is_reply">
+                                    <Icon type="ios-undo" size="18"/>
+                                    回复
+                                </span>
+                                <span class="reply-after-click" @click="commit.is_reply=false" v-if="commit.is_reply">
+                                    <Icon type="ios-undo" size="18"/>
+                                    取消回复
+                                </span>
                             </Row>
-                            <Row>
-                                <Input :placeholder="'回复' + commit.author" v-if="commit.is_reply" style="margin-left:28px; width:491px;"></Input>
-                                <Button type="primary" v-if="commit.is_reply" style="margin-left: 10px;">发布</Button>
+                            <Row v-if="commit.is_reply" style="margin-top: 5px;">
+                                <Input :placeholder="'回复' + commit.author"  v-model="commit.reply_content" style="margin-left:28px; width:491px;"></Input>
+                                <Button type="primary" style="margin-left: 10px;" @click="handle_submit(commit.reply_content,answer.floor, reply.commit_id, commit.author) ">发布</Button>
                             </Row>
                         </div>
-
-
                     </div>
+
+
+
+                    <Row>
+                        <Input placeholder="写下你的评论..." style="margin-top: 13px; width:550px;" v-model="text_content"></Input>
+                        <Button type="primary" style="margin-left: 10px; margin-top: 12px;" @click="handle_submit(text_content, answer.floor, -1)">发布</Button>
+                    </Row>
                 </card>
             </div>
-            <Divider class="divider-style"/>
         </div>
     </div>
 </template>
 
 <script>
+    import {getTime} from './time.js'
     export default {
         name: "blog",
         data() {
             return {
                 load_edit: false,
+                text_content_main: '',
                 text_content:'',     //记录评论模块中写入的文本
                 data: {
+                    "commit": '',
                     "records": 1324,
                     "title": {
-                        "head": "你有哪些秘密一直深埋心底?",
+                        /*"head": "你有哪些秘密一直深埋心底?",
                         "body": "你要对未来满怀期待，对生活心存善意，但是你也要时刻做好最坏的准备。吃得苦中苦，方为人上人，我不想什么人上人，可这时间疾苦，照样谁都没放过。活下去，笑出来。",
                         "records": 15,
                         "reply": [
@@ -380,8 +418,10 @@
                                 "vote": 17,
                             },
                         ]
+                        */
                     },
-                    answers: [
+                    answers: []
+                    /*
                         {
                             "records": 43,
                             "body": "大约在我五岁的时候，我妈妈试图喝农药自杀。家里老人重男轻女，奶奶强势，记忆中，小时候大半日子都是在奶奶与妈妈的争吵中度过的，我的妈妈非常伤心难过，爸爸长年不在家，她孤立无援。那天她突然把正在院子里玩耍的我叫到房间里，记得她躺在床上，一直流着眼泪，兴许是不想让我看到她在哭，大热天的她一直盖着被子。她一边哽咽着，一边叮嘱我以后要好好吃饭，好好读书，要自己洗衣服，因为以后她不能帮我洗了，我那个时候年纪小，懵懵懂懂的，但是也多少察觉到不对劲，我问她，那你要去哪里啊？什么时候回来啊",
@@ -459,12 +499,27 @@
                             ]
                         }
                     ]
+                    */
                 }
             }
         },
         methods: {
             show_editor() {
                 this.load_edit = true;
+            },
+            handle_submit(str, floor, commit, to='') {
+                var sendData = {'floor': floor, 'commit': commit,'id': this.$route.params.id, 'body': str, 'author': this.$parent.userName, 'to': to};
+                var sendJson = JSON.stringify(sendData);
+                let _this = this;
+                this.$http.request({
+                    method: 'post',
+                    url: _this.$url + 'questions/' + 'commit/',
+                    data: sendJson,
+                }).then(response => {
+                    _this.$router.go(0)
+                }).catch(function(response) {
+                    console.log(response)
+                })
             },
             show_main_commit() {   //显示主题评论
 
@@ -486,9 +541,24 @@
                     this.data.title = data.title;
                     this.data.answers = data.answers;
                     this.data.records = data.records;
+                    console.log(this.data.answers.length)
+                    for (var i = 0; i < this.data.answers.length; ++i) {
+                        console.log(this.data.answers[i].reply.length);
+                        for (var j = 0; j < this.data.answers[i].reply.length; ++j) {
+                            console.log(this.data.answers[i].reply[j].reply.length);
+                            for (var k = 0; k < this.data.answers[i].reply[j].reply.length; ++k) {
+                                console.log(getTime(this.data.answers[i].reply[j].reply[k].time*1000));
+                                this.data.answers[i].reply[j].reply[k].time = getTime(this.data.answers[i].reply[j].reply[k].time*1000);
+                            }
+                            this.data.answers[i].reply[j].time = getTime(this.data.answers[i].reply[j].time*1000);
+                        }
+                    }
                 }).catch(function(response) {
                     console.log(response)
                 })
+            },
+            getTime(time) {
+                return getFormatTime(time)
             }
         },
         mounted() {
